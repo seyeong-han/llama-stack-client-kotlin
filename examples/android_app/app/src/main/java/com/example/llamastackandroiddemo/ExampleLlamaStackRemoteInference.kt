@@ -48,6 +48,9 @@ class ExampleLlamaStackRemoteInference(remoteURL: String) {
                 .baseUrl(remoteURL)
                 .headers(mapOf("x-llamastack-client-version" to listOf("0.1.0")))
                 .build()
+
+            //Initialize vector database for RAG
+            vectorDbId = client?.let { RagUtils.setupRagVectorDatabase(it) }
         } catch (e: Exception) {
             client = null
             AppLogging.getInstance().log(e.message)
@@ -100,21 +103,21 @@ class ExampleLlamaStackRemoteInference(remoteURL: String) {
         if (instruction == "") {
             instruction = """
                             Today Date: $formattedZdt
-                    
+
                             Tool Instructions:
                             - When user is asking a question that requires your reasoning, do not use a function call or generate functions.
                             - Only function call if user's intention matches the function that you have access to.
                             - When looking for real time information use relevant functions if available.
                             - Ignore previous conversation history if you are making a tool call.
 
-                                           
+
                             You have access to the following functions:
                             {$functionDefinitions}
-                                      
+
                             If you decide to invoke any of the function(s), you MUST put it in the format of [func_name1(params_name1=params_value1, params_name2=params_value2...), func_name2(params)]\n
                             You SHOULD NOT include any other text in the response.
-                    
-                            Reminder:                          
+
+                            Reminder:
                             - Function calls MUST follow the specified format
                             - Required parameters MUST be specified
                             - Only call one function at a time
