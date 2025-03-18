@@ -178,7 +178,7 @@ public class MainActivity extends AppCompatActivity implements Runnable, Inferen
         if (!mCurrentSettingsFields.getRemoteURL().equals(updatedSettingsFields.getRemoteURL())) {
           // Remote URL changes
           AppLogging.getInstance().log(mCurrentSettingsFields.getRemoteURL() + "remote URL is changing to " + updatedSettingsFields.getRemoteURL());
-          exampleLlamaStackRemoteInference = new ExampleLlamaStackRemoteInference(updatedSettingsFields.getRemoteURL());
+          exampleLlamaStackRemoteInference = new ExampleLlamaStackRemoteInference(updatedSettingsFields.getRemoteURL(), this);
         }
 
         AppLogging.getInstance().log("llamaStackCloudInference " + (exampleLlamaStackRemoteInference == null) + " exampleLlamaStackLocalInference" + (exampleLlamaStackLocalInference == null));
