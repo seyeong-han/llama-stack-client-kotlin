@@ -39,10 +39,15 @@ object RagUtils {
         // Define documents to be used for RAG
         // Enable access to assets folder with context
         val urlContent = dataUrlFromUrl("chats_text.txt", context)
+        // Create metadata for the document (temporary values for testing)
+        val metadata = Document.Metadata.builder()
+            .putAdditionalProperty("title", JsonValue.from("chats_text.txt"))
+            .build()
         val document = Document.builder()
             .documentId("num1")
             .content(urlContent)
             .mimeType("text/plain")
+            .metadata(metadata)
             .build()
 
         return "test-vector-db-${UUID.randomUUID().toString().replace("-", "")}"
