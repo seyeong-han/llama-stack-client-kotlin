@@ -37,9 +37,10 @@ interface InferenceStreamingCallback {
     fun onStatStreamReceived(tps: Float)
 }
 
-class ExampleLlamaStackRemoteInference(remoteURL: String) {
-
+class ExampleLlamaStackRemoteInference(remoteURL: String, private val context: Context) {
+    // context is used to get the content resolver for the media files
     var client: LlamaStackClientClient? = null
+    var vectorDbId: String? = null
 
     init {
         try {
@@ -48,9 +49,7 @@ class ExampleLlamaStackRemoteInference(remoteURL: String) {
                 .baseUrl(remoteURL)
                 .headers(mapOf("x-llamastack-client-version" to listOf("0.1.0")))
                 .build()
-
-            //Initialize vector database for RAG
-            vectorDbId = client?.let { RagUtils.setupRagVectorDatabase(it) }
+            vectorDbId = client?.let { RagUtils.setupRagVectorDatabase(it, context) }
         } catch (e: Exception) {
             client = null
             AppLogging.getInstance().log(e.message)
@@ -328,7 +327,6 @@ class ExampleLlamaStackRemoteInference(remoteURL: String) {
         if (modelName == "meta-llama/Llama-3.1-8B-Instruct" || modelName == "meta-llama/Llama-3.2-11B-Vision-Instruct" || modelName == "meta-llama/Llama-3.2-90B-Vision-Instruct") {
             toolPromptFormat = AgentConfig.ToolPromptFormat.JSON
         }
-
         val agentConfig =
             AgentConfig.builder()
                 .enableSessionPersistence(false)
@@ -347,7 +345,9 @@ class ExampleLlamaStackRemoteInference(remoteURL: String) {
                 .clientTools(
                     clientTools
                 )
+//                .addToolgroup(RagUtils.createRagKnowledgeSearchToolgroup(vectorDbId))
                 .build()
+
 
         return agentConfig
     }
